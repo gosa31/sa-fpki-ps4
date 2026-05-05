@@ -22,19 +22,30 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Download and Setup PS4 Fake PKG Tools
+      - name: Download and Setup PS4 Packaging Tools
         shell: pwsh
         run: |
-          Write-Host "Downloading PS4 Fake PKG Tools by CyB1K..."
+          Write-Host "Downloading PS4 packaging tools..."
           Invoke-WebRequest -Uri "https://github.com/CyB1K/PS4-Fake-PKG-Tools-3.87/archive/refs/heads/main.zip" -OutFile "ps4_tools.zip"
           Expand-Archive -Path "ps4_tools.zip" -DestinationPath "ps4_tools" -Force
-          $exeFile = Get-ChildItem -Path "ps4_tools" -Filter "orbis-pub-cmd.exe" -Recurse | Select-Object -First 1
-          if ($exeFile) {
-            $toolsPath = $exeFile.DirectoryName
-            Write-Host "Found tools at: $toolsPath"
-            Add-Content -Path $env:GITHUB_PATH -Value $toolsPath
-          } else {
-            Write-Warning "Could not find orbis-pub-cmd.exe in the downloaded tools!"
+          try {
+            Invoke-WebRequest -Uri "https://github.com/pearlxcore/ps4-pkg-tool/releases/latest/download/ps4-pkg-tool-win64.zip" -OutFile "ps4-pkg-tool.zip"
+            Expand-Archive -Path "ps4-pkg-tool.zip" -DestinationPath "ps4-pkg-tool" -Force
+          } catch {
+            Write-Warning "Could not download ps4-pkg-tool from GitHub releases. Continuing with available tools."
+          }
+          $exeFiles = @()
+          $exeFiles += Get-ChildItem -Path "ps4_tools","ps4-pkg-tool" -Filter "orbis-pub-cmd.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          $exeFiles += Get-ChildItem -Path "ps4_tools","ps4-pkg-tool" -Filter "ps4-pkg-tool.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          foreach ($exeFile in $exeFiles) {
+            if ($exeFile) {
+              $toolsPath = $exeFile.DirectoryName
+              Write-Host "Found tool at: $toolsPath"
+              Add-Content -Path $env:GITHUB_PATH -Value $toolsPath
+            }
+          }
+          if (-not ($exeFiles | Where-Object { $_ })) {
+            Write-Warning "No PS4 packaging executables were found in the downloaded tools."
           }
 
       - name: Build PS4 package with create_pkg_builder.py

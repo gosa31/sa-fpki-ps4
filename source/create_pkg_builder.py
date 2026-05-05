@@ -82,25 +82,27 @@ def write_param_sfo(output_path, sfo_data):
         f.write(data_table)
         
 def create_pkg_with_tool(builds_dir, pkg_output):
-    """Calls orbis-pub-cmd to build the actual .pkg file."""
+    """Calls orbis-pub-cmd or ps4-pkg-tool to build the actual .pkg file."""
     print("[*] Attempting to create PS4 PKG file...")
-    try:
-        result = subprocess.run([
-            "orbis-pub-cmd.exe", "img_create",
-            "--oformat", "pkg",
-            str(builds_dir),
-            str(pkg_output)
-        ], capture_output=True, text=True, timeout=60)
-        
-        if result.returncode == 0:
-            print(f"[OK] Created PKG file: {pkg_output}")
-            return True
-        print(f"[!] orbis-pub-cmd failed: {result.stderr}")
-    except FileNotFoundError:
-        print("[!] orbis-pub-cmd.exe not found.")
-    except Exception as exc:
-        print(f"[!] PKG creation failed: {exc}")
-        
+    tool_commands = [
+        ("orbis-pub-cmd.exe", ["img_create", "--oformat", "pkg", str(builds_dir), str(pkg_output)]),
+        ("ps4-pkg-tool.exe", ["create", str(builds_dir), str(pkg_output)])
+    ]
+
+    for tool, args in tool_commands:
+        try:
+            result = subprocess.run([tool, *args], capture_output=True, text=True, timeout=120)
+            if result.returncode == 0:
+                print(f"[OK] Created PKG file with {tool}: {pkg_output}")
+                return True
+            print(f"[!] {tool} failed: {result.stderr or result.stdout}")
+        except FileNotFoundError:
+            print(f"[!] {tool} not found.")
+        except subprocess.TimeoutExpired:
+            print(f"[!] {tool} timed out.")
+        except Exception as exc:
+            print(f"[!] {tool} failed: {exc}")
+
     return False
 
 
