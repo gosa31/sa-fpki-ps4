@@ -41,10 +41,6 @@ jobs:
         working-directory: source
         shell: pwsh
         run: |
-          if (-not (Test-Path "ps4_pkg_utils.py")) {
-            Write-Error "الملف ps4_pkg_utils.py مفقود. هذا الملف ضروري لأنه يُستدعى داخل create_pkg_builder.py."
-            exit 1
-          }
           if (-not (Test-Path "create_pkg_builder.py")) {
             Write-Error "الملف create_pkg_builder.py غير موجود في مسار source."
             exit 1
