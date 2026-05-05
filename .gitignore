@@ -1,0 +1,11 @@
+source/.vs
+/source/Assets/Scripts/.vs
+/source/DATA
+/source/etc
+/source/Library
+/source/obj
+/source/Temp
+/source/UnityPackageManager
+
+*.meta
+*.pkg

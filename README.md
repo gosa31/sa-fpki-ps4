@@ -1,0 +1,226 @@
+# FPKGi - A Server-Based PS4 & PS5 Content Installer
+> [!NOTE]
+> FPKGi (Fake PKG Installer) is an open-source homebrew app for installing modified .pkg files on the PS4 and PS5. Inspired by the original PKGi for PSP, Vita, and PS3, it enables you to manage and install content via .json files—from your device, a local network, or the web—and supports package downloads from your private server. Designed for educational and personal use, FPKGi promotes game preservation in the PlayStation homebrew scene by streamlining content browsing, downloading, and installation. For best performance, offload your files to a NAS and run a web server with Node.js or Python, then pass the content URL to your .json files.
+
+> [!IMPORTANT]  
+> Use FPKGi responsibly and in accordance with the laws of your country. This tool is intended solely for legal, educational, and personal use. Do not use FPKGi for piracy or any other illegal activities. Always download FPKGi from our official GitHub repository, via pkg-zone.com, or through the Homebrew Store, and avoid third-party sources. We assume no responsibility to any damage from malicious downloads and/or legal issues.
+
+## Setup Instructions
+#### Download the Latest Version:
+   - Get the latest compiled package from the [Releases](https://github.com/ItsJokerZz/FPKGi/releases) or visit [pkg-zone.com](https://pkg-zone.com/details/FPKGI13337).
+
+#### Install the Package:
+   - Choose your preferred method to install the package on your console.
+   - Alternatively, you can install directly from LightningMods' [Homebrew Store](https://github.com/LightningMods/PS4-Store).
+
+### GitHub Build Automation
+This repository now includes a GitHub Actions workflow that attempts to build `source/build/FPKGi_v2.0.0_PS4.pkg` on every push to `main` and uploads it as a workflow artifact.
+
+> The workflow runs in `windows-latest` and uses `source/create_pkg_builder.py` to generate the package.
+
+### Building Locally
+To build the PS4 PKG locally, you need:
+1. **Unity with PS4 Support**: Install Unity 2019+ with PS4 build module (requires Sony PS4 SDK).
+2. **PS4 SDK**: Obtain and install the official Sony PS4 SDK.
+3. **Packaging Tools**: Install `orbis-pub-cmd.exe` (from PS4 SDK) or `ps4-pkg-tool.exe` (open-source alternative from https://github.com/pearlxcore/ps4-pkg-tool).
+4. **Python 3**: For running the build scripts.
+
+#### Steps:
+1. Open the project in Unity with PS4 support.
+2. Build for PS4 target, which will create `eboot.bin` in `Builds/PS4/app/`.
+3. Run `python source/create_pkg_builder.py` to create the PKG.
+
+If packaging tools are not available, the build will fail. Ensure you have valid PS4 development tools installed.
+
+> [!NOTE]
+> For modified/jailbroken PS4, unsigned PKGs created with open-source tools are acceptable. The CE-34706-0 error occurs when the PKG is corrupted or improperly formatted.
+
+### Populate Content
+Launch the app to automatically create the necessary directories and `.json` files in the `/user/data/FPKGi/` folder.
+
+#### Populate Content Locally
+Edit the `.json` files generated at `/user/data/FPKGi/ContentJSONs/` to add your content. <br>
+**You can also generate / populate, and save the necessary `.json` file [here](https://www.itsjokerzz.site/projects/FPKGi/gen/) on my site.**
+
+> [!NOTE]
+> Use bytes for `"size"` and for specifying content's region: `"USA"`, `"JAP"`, `"EUR"`, `"ASIA"`, or `null`.
+
+### Example `.json` structure:
+```json
+{
+    "DATA": {
+        "https://www.example.com/directLinkToContent.pkg": {
+            "region": "USA",
+            "name": "Content Title",
+            "version": "1.00",
+            "release": "11-15-2014",
+            "size": 1000000000,
+            "min_fw": null,
+            "cover_url": "https://www.example.com/cover.png"
+        }
+    }
+}
+```
+
+> [!IMPORTANT]  
+> Please ensure the size is as accurate as possible to prevent issues with downloading! The following fields can be <br> left as `null`
+where applicable: `"version"`, `"region"`, `"release"`, `"min_fw"`, and `"cover_url"` if you decide.
+
+#### Populate Content Via Web
+To enable web population, edit the `config.json` file located at `/user/data/FPKGi/` and enable it in the menu.
+
+### Locate and edit the following section:
+```json
+    "CONTENT_URLS": {
+      "PS1": null,
+      "PS2": null,
+      "PSP": null,
+      "games": null,
+      "apps": null,
+      "updates": null,
+      "DLC": null,
+      "demos": null,
+      "homebrew": null,
+      "emulators": null,
+      "themes": null
+    }
+```
+
+#### Replace `null` with URLs pointing to `.json` files containing your content:
+```json
+    "CONTENT_URLS": {
+      "games": "https://www.example.com/GAMES.json"
+    }
+```
+
+Unspecified fields will default to loading content from local `.json` files.
+
+## Controls & Settings
+### Navigation
+- **Move Through Items**: Use **<kbd>(LS)tick</kbd>/<kbd>(RS)tick</kbd>** or use the dpad to navigate.
+- **Select/Download**: Press **![X](https://www.github.com/bucanero/pkgi-ps3/raw/master/data/CROSS.png)** to select or download content.
+- **Page & Category Navigation**:
+  - **<kbd>L1</kbd>/<kbd>R1</kbd>**: Changes pages.
+  - **<kbd>L2</kbd>/<kbd>R2</kbd>**: Changes category.
+- **View Details**: Press **![square](https://www.github.com/bucanero/pkgi-ps3/raw/master/data/SQUARE.png)** to view detailed information about the selected content.
+
+### Settings Menu
+- Press **![triangle](https://www.github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png)** to open settings.
+- **Save/Cancel**:
+  - Press **![triangle](https://www.github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png)** to save current settings changes.
+  - Press **![circle](https://www.github.com/bucanero/pkgi-ps3/raw/master/data/CIRCLE.png)** to toggle menu & not save setting.
+ 
+<br>
+
+- **Press the touchpad to search or filter through content by title ID or name.**
+  
+## Features
+### Core Features
+- **Search**: Quickly find content using keywords.
+- **Sorting**: Organize content by size, name, region, or title ID.
+- **Filtering**: Filter content by type for faster navigation.
+- **View Options**: Toggle between ascending and descending order.
+
+### Customization
+- **Background Music**: Toggle the original PKGi background music by [nobodo](https://www.github.com/nobodo).
+- **Custom Backgrounds**:
+Add images via URL or locally (supports `.png`, `.bmp`, `.jpg`, and `.jpeg`).
+  - URL Example:
+    ```json
+    "background_uri": "https://www.example.com/image.png"
+    ```
+  - Local Example:
+    ```json
+    "background_uri": "/user/data/FPKGi/Backgrounds/custom.png"
+    ```
+  - Reset to default:
+    ```json
+    "background_uri": null
+    ```
+
+### Download Management
+- **Background Downloads**: Supports simultaneous downloads with automatic installation and rest-mode support.
+- **Foreground Downloads**: Single download support, with a queue feature planned in future updates.<br>
+
+    - You can edit the path within the app's settings, or manually through the `config.json` like so:
+    ```json
+    "downloadPath": "/mnt/usb0/"
+    ```
+
+    ```json
+    "downloadPath": "/user/data/folder/"
+    ```
+    
+    - To reset, simply set `null` or type the default path:
+    ```json
+    "downloadPath": "/user/data/FPKGi/Downloads/"
+    ```
+    
+## How to Build
+<details>
+  <summary><strong>Prerequisites</strong></summary>
+  <ul>
+    <li><strong>Unity Hub</strong> & <strong>Unity 2017.2.0p1</strong> (or a compatible version)</li>
+    <li><strong>PS4 SDK 4.50+</strong> with Unity integration</li>
+    <li><a href="https://github.com/CyB1K/PS4-Fake-PKG-Tools-3.87" target="_blank">PS4 Fake PKG Tools 3.87</a></li>
+    <li><a href="https://www.dotnet.microsoft.com/en-us/download/dotnet-framework/net46" target="_blank">.NET 4.6 Developer Pack</a></li>
+  </ul>
+
+  <details>
+    <summary><strong>Included Precompiled Dependencies</strong></summary>
+    <ul>
+      <li><a href="https://www.github.com/SaladLab/Json.Net.Unity3D" target="_blank">Json.Net.Unity3D</a></li>
+      <li><a href="https://www.github.com/ItsJokerZz/store-api" target="_blank">HB Store's API</a></li>
+      <li><a href="https://www.github.com/ItsJokerZz/UnityOrbisBridge" target="_blank">UnityOrbisBridge</a></li>
+      <li><a href="https://www.github.com/ItsJokerZz/UnityOrbisBridge/tree/main/source/wrapper" target="_blank">UOBWrapper</a></li>
+    </ul>
+  </details>
+</details>
+
+### Build Prerequisites
+1. **Ensure Prerequisites are Set Up:**
+   - Install **Unity Hub** and **Unity 2017.2.0p1**.
+   - Set up the **PS4 SDK 4.50** with the matching Unity integration.
+   - [PS4 Fake PKG Tools 3.87](https://github.com/CyB1K/PS4-Fake-PKG-Tools-3.87) to replace the build tools within the SDK.
+   - Your choice of Visual Studio (Code) with [.NET 4.6 Developer Pack](https://www.dotnet.microsoft.com/en-us/download/dotnet-framework/net46).
+
+**For more detailed guidance with images, check out [RetroGamer74's guide](https://github.com/RetroGamer74/HowToBuildWithUnityPS4FakePKG/blob/master/README.md).**
+
+## Troubleshooting Error Code `CE-36441-8`
+If you encounter this error, follow these steps to resolve it:
+
+> [!WARNING]  
+> **THIS IS NOT A FIX OR RECOMMENDED BUT THIS CAN HELP AS A TEMPORARILY <br>
+> WORKAROUND UNTIL RESOLVED. PLEASE BE ADVISED AND REVERT THIS AFTER!**
+
+1. **Enable Debug Menu**:  
+   - Open the **GoldHEN** menu.  
+   - Navigate to **Debug Settings** and enable **Full Menu**.  
+
+2. **Configure NP Environment**:  
+   - Go to the PS4's settings.  
+   - Navigate to `Debug Settings > PlayStation Network`.  
+   - Set **NP Environment** to `invalid`.
+
+3. **Restart the Console**.  
+
+This solution is sourced from [r/ps4homebrew](https://www.reddit.com/r/ps4homebrew/comments/1ctvvg2/comment/l4exrpy/), where several users, including myself, have found it to be effective.
+
+**I am planning on looking into an actual fix rather than a work-around for this issue. If you have any ideas, <br> please make a pull-request 
+of [UnityOrbisBridge](https://github.com/ItsJokerZz/UnityOrbisBridge) plugin and I'll gladly look into it and merge into the branch.**
+
+## Special Thanks
+- **Original App Creator**: [Bucanero](https://www.github.com/bucanero)
+- **Original PKGi Music**: [nobodo](https://www.github.com/nobodo)
+
+  ### Unity Sources:
+    - [RetroGamer74](https://www.github.com/RetroGamer74) & [Lapy055](https://www.github.com/Lapy055)
+
+A huge thank you to the following members of the [OOSDK Discord](https://www.discord.com/invite/GQr8ydn) for their support:
+- **[TheMagicalBlob](https://github.com/TheMagicalBlob)**, [LightningMods](https://github.com/LightningMods), [Al-Azif](https://github.com/Al-Azif), Da Puppeh, Kernel Panic, lainofthewired, and others.
+
+For more credits, please check out [UnityOrbisBridge](https://www.github.com/ItsJokerZz/UnityOrbisBridge). If I've missed anyone, feel free to reach out. <br><br>
+For assistance, please leave an issue and/or join my community [Discord server](https://discord.com/invite/RjG4Whf) and I'll help you out.
+
+## License
+This project is licensed under the GNU General Public License v2.0 - see the [LICENSE](LICENSE) file for details.

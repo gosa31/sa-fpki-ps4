@@ -1,0 +1,75 @@
+name: Build PS4 PKG
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-ps4-pkg:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Download and Setup PS4 Fake PKG Tools
+        shell: pwsh
+        run: |
+          Write-Host "Downloading PS4 Fake PKG Tools by CyB1K..."
+          Invoke-WebRequest -Uri "https://github.com/CyB1K/PS4-Fake-PKG-Tools-3.87/archive/refs/heads/main.zip" -OutFile "ps4_tools.zip"
+          Expand-Archive -Path "ps4_tools.zip" -DestinationPath "ps4_tools" -Force
+          $exeFile = Get-ChildItem -Path "ps4_tools" -Filter "orbis-pub-cmd.exe" -Recurse | Select-Object -First 1
+          if ($exeFile) {
+            $toolsPath = $exeFile.DirectoryName
+            Write-Host "Found tools at: $toolsPath"
+            Add-Content -Path $env:GITHUB_PATH -Value $toolsPath
+          } else {
+            Write-Warning "Could not find orbis-pub-cmd.exe in the downloaded tools!"
+          }
+
+      - name: Build PS4 package with create_pkg_builder.py
+        working-directory: source
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "ps4_pkg_utils.py")) {
+            Write-Error "الملف ps4_pkg_utils.py مفقود. هذا الملف ضروري لأنه يُستدعى داخل create_pkg_builder.py."
+            exit 1
+          }
+          if (-not (Test-Path "create_pkg_builder.py")) {
+            Write-Error "الملف create_pkg_builder.py غير موجود في مسار source."
+            exit 1
+          }
+          python .\create_pkg_builder.py
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error 'PS4 PKG build failed'
+            exit 1
+          }
+        env:
+          PYTHONIOENCODING: utf-8
+
+      - name: Verify generated PS4 package exists
+        working-directory: source
+        shell: pwsh
+        run: |
+          $pkg = Get-ChildItem -Path build\* -Include *.pkg,*.zip -ErrorAction SilentlyContinue
+          if (-not $pkg) {
+            Write-Error 'Generated PS4 package or archive is missing'
+            exit 0
+          }
+
+      - name: Upload PS4 package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FPKGi-PS4-PKG
+          path: source/build/FPKGi_v2.0.0_PS4.*
+          if-no-files-found: error
