@@ -11,7 +11,6 @@ import os
 import shutil
 import sys
 import hashlib
-import zipfile
 import subprocess
 from pathlib import Path
 from datetime import datetime
@@ -81,29 +80,16 @@ def write_param_sfo(output_path, sfo_data):
         f.write(key_table)
         f.write(data_table)
         
-def create_pkg_with_tool(builds_dir, pkg_output):
-    """Calls orbis-pub-cmd or ps4-pkg-tool to build the actual .pkg file."""
-    print("[*] Attempting to create PS4 PKG file...")
-    tool_commands = [
-        ("orbis-pub-cmd.exe", ["img_create", "--oformat", "pkg", str(builds_dir), str(pkg_output)]),
-        ("ps4-pkg-tool.exe", ["create", str(builds_dir), str(pkg_output)])
-    ]
-
-    for tool, args in tool_commands:
-        try:
-            result = subprocess.run([tool, *args], capture_output=True, text=True, timeout=120)
-            if result.returncode == 0:
-                print(f"[OK] Created PKG file with {tool}: {pkg_output}")
-                return True
-            print(f"[!] {tool} failed: {result.stderr or result.stdout}")
-        except FileNotFoundError:
-            print(f"[!] {tool} not found.")
-        except subprocess.TimeoutExpired:
-            print(f"[!] {tool} timed out.")
-        except Exception as exc:
-            print(f"[!] {tool} failed: {exc}")
-
-    return False
+def create_pkg_archive(builds_dir, output_path):
+    """Creates distributable ZIP archive for PS4 homebrew installation (USB package folder)."""
+    print("[*] Creating PS4 homebrew ZIP archive...")
+    try:
+        shutil.make_archive(str(output_path.with_suffix('')), 'zip', builds_dir)
+        print(f"[OK] Created homebrew ZIP: {output_path.name}")
+        return True
+    except Exception as e:
+        print(f"[ERROR] ZIP creation failed: {e}")
+        return False
 
 
 def create_param_sfo(output_path, app_id="FPKG00001", title="FPKGi v2.0.0"):
