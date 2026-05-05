@@ -1,0 +1,29 @@
+# Ignore your populated games file so it is not uploaded
+/GAMES.json
+
+# Ignore Unity generated files and temporary build artifacts
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+*.pidb
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.suo
+*.user
+*.userprefs
+*.unityproj
+*.booproj
+.DS_Store
+
+# Ignore content JSON files added by users
+DATA/ContentJSONs/*.json
+
+# Ignore final package artifacts
+*.pkg

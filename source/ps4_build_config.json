@@ -1,0 +1,75 @@
+{
+  "ps4_build_config": {
+    "project": "FPKGi",
+    "version": "2.0.0",
+    "platform": "PS4",
+    "target_firmware": "5.05",
+    
+    "build_settings": {
+      "optimization_level": "3",
+      "debug_mode": false,
+      "strip_symbols": true,
+      "compile_flags": [
+        "-march=native",
+        "-O3",
+        "-DNDEBUG",
+        "-DORBIS"
+      ]
+    },
+
+    "package_metadata": {
+      "app_id": "FPKG00001",
+      "title": "FPKGi v2.0.0",
+      "title_short": "FPKGi",
+      "publisher": "FPKGi Dev",
+      "version": "02.00",
+      "version_short": "2.0.0",
+      "content_rating": "MATURE",
+      "content_type": "HOMEBREW"
+    },
+
+    "output": {
+      "pkg_name": "FPKGi_v2.0.0_PS4.zip",
+      "pkg_path": "./build/pkg/",
+      "size_mb": 2048,
+      "compression": "enabled"
+    },
+
+    "entry_point": {
+      "binary": "eboot.bin",
+      "parameters": "--ui-modern --data-mode json"
+    },
+
+    "directories": [
+      {
+        "src": "Assets/Resources",
+        "dst": "/app/assets"
+      },
+      {
+        "src": "Assets/Fonts",
+        "dst": "/app/fonts"
+      },
+      {
+        "src": "Assets/Scenes",
+        "dst": "/app/scenes"
+      }
+    ],
+
+    "icons": {
+      "app_icon": "Assets/Images/icon0.png",
+      "background_image": "Assets/Images/bg0.png",
+      "preview_image": "Assets/Images/pic0.png"
+    },
+
+    "networking": {
+      "required": true,
+      "protocols": ["HTTP", "HTTPS"],
+      "ports": [80, 443]
+    },
+
+    "storage": {
+      "save_data_path": "/user/home/*/savedata/FPKG00001",
+      "cache_path": "/user/home/*/cache"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package>
+  <!-- FPKGi Package Definition for PS4 -->
+  
+  <PropertyGroup>
+    <Title>FPKGi v2.0.0</Title>
+    <TitleId>FPKG00001</TitleId>
+    <Version>02.00</Version>
+    <Platform>PS4</Platform>
+    <ContentType>Homebrew</ContentType>
+    <Release>2026-05-04</Release>
+  </PropertyGroup>
+
+  <Files>
+    <!-- Main Executable -->
+    <File Path="eboot.bin" DestPath="/app" />
+    
+    <!-- UI Resources -->
+    <Folder Path="Assets/Resources" DestPath="/app/assets" Recursive="true" />
+    <Folder Path="Assets/Scenes" DestPath="/app/scenes" Recursive="true" />
+    <Folder Path="Assets/Scripts" DestPath="/app/scripts" Recursive="true" />
+    
+    <!-- Game Data -->
+    <File Path="games_database.json" DestPath="/app/data" />
+    
+    <!-- Fonts & Localization -->
+    <Folder Path="Assets/Fonts" DestPath="/app/fonts" Recursive="true" />
+  </Files>
+
+  <Metadata>
+    <AppId>FPKG00001</AppId>
+    <AppType>Game</AppType>
+    <Category>Game</Category>
+    <Country>ALL</Country>
+    <License>Freeware</License>
+    <Description>FPKGi v2.0.0 - PS4 Homebrew Package Manager with Modern UI</Description>
+    <Publisher>FPKGi Dev Team</Publisher>
+    <ImageUrl>Assets/Images/icon0.png</ImageUrl>
+  </Metadata>
+
+  <SystemRequirements>
+    <MinimumFirmware>5.05</MinimumFirmware>
+    <RAM>4096</RAM>
+    <Storage>15000</Storage>
+    <Network>Required</Network>
+  </SystemRequirements>
+
+  <Permissions>
+    <Permission>Network</Permission>
+    <Permission>FileIO</Permission>
+    <Permission>USB</Permission>
+  </Permissions>
+</Package>
