@@ -93,10 +93,10 @@ jobs:
       with:
         name: PS4-Packages-${{ matrix.configuration }}
         path: |
-          build/**/*.pkg
-          build/**/*.zip
-          BUILD/**/*.pkg
-          BUILD/**/*.zip
-          Builds/**/*.pkg
-          Builds/**/*.zip
+          source/build/**/*.pkg
+          source/build/**/*.zip
+          source/BUILD/**/*.pkg
+          source/BUILD/**/*.zip
+          source/Builds/**/*.pkg
+          source/Builds/**/*.zip
         if-no-files-found: warn
